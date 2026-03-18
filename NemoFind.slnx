@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="NemoFind.API/NemoFind.API.csproj" />
+  <Project Path="NemoFind.CLI/NemoFind.CLI.csproj" />
+  <Project Path="NemoFind.Core/NemoFind.Core.csproj" />
+  <Project Path="NemoFind.Infrastructure/NemoFind.Infrastructure.csproj" />
+</Solution>
