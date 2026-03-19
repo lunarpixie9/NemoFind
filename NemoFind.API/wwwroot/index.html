@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NemoFind</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #ffffff;
+            color: #f0f0f0;
+            min-height: 100vh;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 60px 20px 40px;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #ff6b35;
+            margin-bottom: 8px;
+        }
+
+        .hero p {
+            color: #000000;
+            font-style: italic;
+            font-size: 1rem;
+        }
+
+        .search-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 16px 20px;
+            font-size: 1.1rem;
+            border: 2px solid #333;
+            border-radius: 12px;
+            background: #1a1a1a;
+            color: #f0f0f0;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-box input:focus {
+            border-color: #ff6b35;
+        }
+
+        .search-box button {
+            padding: 16px 28px;
+            background: #ff6b35;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .search-box button:hover { background: #e55a25; }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .filters select {
+            padding: 8px 14px;
+            background: #1a1a1a;
+            color: #ccc;
+            border: 1px solid #333;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .stats-bar {
+            text-align: center;
+            color: #555;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
+
+        .results-info {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+
+        .result-card {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 18px 20px;
+            margin-bottom: 12px;
+            transition: border-color 0.2s;
+            cursor: pointer;
+        }
+
+        .result-card:hover { border-color: #ff6b35; }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .result-name {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #ff6b35;
+        }
+
+        .result-score {
+            font-size: 0.8rem;
+            color: #555;
+            background: #111;
+            padding: 3px 8px;
+            border-radius: 20px;
+        }
+
+        .result-path {
+            font-size: 0.8rem;
+            color: #555;
+            margin-bottom: 8px;
+            word-break: break-all;
+        }
+
+        .result-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .result-meta span {
+            background: #111;
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+
+        .score-bar {
+            height: 3px;
+            background: #2a2a2a;
+            border-radius: 2px;
+            margin-top: 10px;
+        }
+
+        .score-fill {
+            height: 100%;
+            background: #ff6b35;
+            border-radius: 2px;
+            transition: width 0.4s;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #444;
+        }
+
+        .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+
+        .crawl-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 12px 24px;
+            background: transparent;
+            color: #ff6b35;
+            border: 1px solid #ff6b35;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .crawl-btn:hover {
+            background: #ff6b35;
+            color: white;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+<div class="hero">
+    <h1>NemoFind</h1>
+    <p>Just keep swimming, until you find your file.</p>
+</div>
+
+<div class="search-container">
+    <div class="search-box">
+        <input
+                type="text"
+                id="searchInput"
+                placeholder="Search your Mac..."
+                autofocus
+        />
+        <button onclick="search()">Search</button>
+    </div>
+
+    <div class="filters">
+        <select id="fileType">
+            <option value="">All file types</option>
+            <option value="pdf">PDF</option>
+            <option value="txt">Text</option>
+            <option value="md">Markdown</option>
+            <option value="cs">C#</option>
+            <option value="py">Python</option>
+            <option value="js">JavaScript</option>
+            <option value="json">JSON</option>
+        </select>
+
+        <select id="sinceDays">
+            <option value="">Any time</option>
+            <option value="1">Last 24 hours</option>
+            <option value="7">Last 7 days</option>
+            <option value="30">Last 30 days</option>
+            <option value="90">Last 3 months</option>
+        </select>
+    </div>
+
+    <div class="stats-bar" id="statsBar">Loading stats...</div>
+
+    <div id="results"></div>
+
+    <button class="crawl-btn" onclick="triggerCrawl()">
+         Re-index my files
+    </button>
+</div>
+
+<script>
+    const API = 'http://localhost:5258/api';
+
+    // Search on Enter key
+    document.getElementById('searchInput').addEventListener('keydown', e => {
+        if (e.key === 'Enter') search();
+    });
+
+    async function search() {
+        const q = document.getElementById('searchInput').value.trim();
+        const type = document.getElementById('fileType').value;
+        const sinceDays = document.getElementById('sinceDays').value;
+
+        if (!q) return;
+
+        document.getElementById('results').innerHTML =
+            '<div class="loading"> Searching...</div>';
+
+        try {
+            let url = `${API}/search?q=${encodeURIComponent(q)}`;
+            if (type) url += `&type=${type}`;
+            if (sinceDays) url += `&sinceDays=${sinceDays}`;
+
+            const res = await fetch(url);
+            const data = await res.json();
+            renderResults(data, q);
+        } catch {
+            document.getElementById('results').innerHTML =
+                '<div class="empty-state"><div class="icon">⚠️</div>Could not connect to NemoFind API.<br>Make sure the API is running.</div>';
+        }
+    }
+
+    function renderResults(results, query) {
+        const container = document.getElementById('results');
+
+        if (!results || results.length === 0) {
+            container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">🔍</div>
+                        No files found for "<strong>${query}</strong>"<br>
+                        <small>Try different keywords or re-index your files below</small>
+                    </div>`;
+            return;
+        }
+
+        const maxScore = Math.max(...results.map(r => r.relevanceScore));
+
+        container.innerHTML = `
+                <div class="results-info">${results.length} result${results.length !== 1 ? 's' : ''} for "<strong>${query}</strong>"</div>
+                ${results.map(r => `
+                    <div class="result-card">
+                        <div class="result-header">
+                            <span class="result-name">📄 ${r.fileName}</span>
+                            <span class="result-score">Score: ${r.relevanceScore}</span>
+                        </div>
+                        <div class="result-path">${r.filePath}</div>
+                        <div class="result-meta">
+                            <span>${r.extension.toUpperCase().replace('.', '')}</span>
+                            <span>${r.matchCount} match${r.matchCount !== 1 ? 'es' : ''}</span>
+                            <span>${new Date(r.modifiedAt).toLocaleDateString()}</span>
+                        </div>
+                        <div class="score-bar">
+                            <div class="score-fill" style="width: ${(r.relevanceScore / maxScore * 100).toFixed(1)}%"></div>
+                        </div>
+                    </div>
+                `).join('')}`;
+    }
+
+    async function triggerCrawl() {
+        const btn = document.querySelector('.crawl-btn');
+        btn.textContent = '🐠 Crawling... this may take a moment';
+        btn.disabled = true;
+
+        try {
+            await fetch(`${API}/crawl`, { method: 'POST' });
+            btn.textContent = '✅ Crawl started in background!';
+            setTimeout(() => {
+                btn.textContent = '🔄 Re-index my files';
+                btn.disabled = false;
+                loadStats();
+            }, 3000);
+        } catch {
+            btn.textContent = '⚠️ Could not start crawl';
+            btn.disabled = false;
+        }
+    }
+
+    async function loadStats() {
+        try {
+            const res = await fetch(`${API}/search/stats`);
+            const stats = await res.json();
+            document.getElementById('statsBar').textContent =
+                `${stats.totalFiles.toLocaleString()} files indexed • ${stats.totalWords.toLocaleString()} unique words • ${(stats.databaseSizeBytes / 1024).toFixed(1)} KB database`;
+        } catch {
+            document.getElementById('statsBar').textContent = 'API not connected';
+        }
+    }
+
+    // Load stats on page open
+    loadStats();
+</script>
+</body>
+</html>
