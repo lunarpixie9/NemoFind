@@ -7,31 +7,74 @@ namespace NemoFind.API.Controllers;
 [Route("api/[controller]")]
 public class CrawlController : ControllerBase
 {
-    private readonly ICrawlerService _crawlerService;
-    private readonly IIndexerService _indexerService;
+    private readonly IServiceProvider _serviceProvider;
 
-    public CrawlController(ICrawlerService crawlerService, IIndexerService indexerService)
+    public CrawlController(IServiceProvider serviceProvider)
     {
-        _crawlerService = crawlerService;
-        _indexerService = indexerService;
+        _serviceProvider = serviceProvider;
     }
 
     [HttpPost]
-    public async Task<IActionResult> Crawl([FromQuery] string? path = null)
+    public IActionResult Crawl([FromQuery] string? path = null)
     {
         var rootPath = path ?? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
-        // Run crawl and index in background so API responds immediately
         _ = Task.Run(async () =>
         {
-            await _crawlerService.CrawlAsync(rootPath);
-
-            // Index every crawled file
-            var files = Directory.EnumerateFiles(rootPath, "*.*", SearchOption.AllDirectories);
-            foreach (var file in files)
+            try
             {
-                try { await _indexerService.IndexFileAsync(file); }
-                catch { /* skip unreadable files */ }
+                Console.WriteLine($"🐠 Crawl started: {rootPath}");
+
+                var extensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                {
+                    ".txt", ".md", ".cs", ".js", ".py", ".java", ".cpp", ".c",
+                    ".json", ".xml", ".yaml", ".yml", ".csv", ".html", ".css",
+                    ".ts", ".go", ".rs", ".swift", ".kt", ".pdf", ".docx"
+                };
+
+                var files = Directory.EnumerateFiles(
+                    rootPath, "*.*", SearchOption.AllDirectories)
+                    .Where(f => extensions.Contains(
+                        System.IO.Path.GetExtension(f).ToLowerInvariant()))
+                    .Where(f => !f.Contains(".app/"))
+                    .Where(f => !f.Contains("node_modules/"))
+                    .Where(f => !f.Contains(".git/"))
+                    .Where(f => !f.Contains("/bin/"))
+                    .Where(f => !f.Contains("/obj/"))
+                    .ToList();
+
+                Console.WriteLine($"  Found {files.Count} supported files");
+
+                // Process 5 files at a time
+                var semaphore = new SemaphoreSlim(5);
+                var tasks = files.Select(async file =>
+                {
+                    await semaphore.WaitAsync();
+                    try
+                    {
+                        using var scope = _serviceProvider.CreateScope();
+                        var crawler = scope.ServiceProvider.GetRequiredService<ICrawlerService>();
+                        var indexer = scope.ServiceProvider.GetRequiredService<IIndexerService>();
+
+                        await crawler.CrawlFileAsync(file);
+                        await indexer.IndexFileAsync(file);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"  Skipping {System.IO.Path.GetFileName(file)}: {ex.Message}");
+                    }
+                    finally
+                    {
+                        semaphore.Release();
+                    }
+                });
+
+                await Task.WhenAll(tasks);
+                Console.WriteLine("🐠 Crawl and index complete!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Crawl error: {ex.Message}");
             }
         });
 

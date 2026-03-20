@@ -14,7 +14,7 @@ public class CrawlerService : ICrawlerService
     {
         ".txt", ".md", ".cs", ".js", ".py", ".java", ".cpp", ".c",
         ".json", ".xml", ".yaml", ".yml", ".csv", ".html", ".css",
-        ".ts", ".go", ".rs", ".swift", ".kt", ".pdf"
+        ".ts", ".go", ".rs", ".swift", ".kt", ".pdf", ".docx"
     };
 
     public CrawlerService(NemoFindDbContext context)

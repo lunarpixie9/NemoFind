@@ -112,10 +112,12 @@ public class IndexerService : IIndexerService
 
         try
         {
-            if (extension == ".pdf")
-                return ExtractTextFromPdf(filePath);
-
-            return IOFile.ReadAllText(filePath);
+            return extension switch
+            {
+                ".pdf" => ExtractTextFromPdf(filePath),
+                ".docx" => ExtractTextFromDocx(filePath),
+                _ => IOFile.ReadAllText(filePath)
+            };
         }
         catch (Exception ex)
         {
@@ -124,6 +126,31 @@ public class IndexerService : IIndexerService
         }
     }
 
+    private string ExtractTextFromDocx(string filePath)
+    {
+        var text = new System.Text.StringBuilder();
+
+        try
+        {
+            using var archive = System.IO.Compression.ZipFile.OpenRead(filePath);
+            var documentEntry = archive.GetEntry("word/document.xml");
+            if (documentEntry == null) return string.Empty;
+
+            using var stream = documentEntry.Open();
+            using var reader = new System.IO.StreamReader(stream);
+            var xml = reader.ReadToEnd();
+
+            // Strip XML tags — extract just the text content
+            var cleanText = System.Text.RegularExpressions.Regex.Replace(xml, "<[^>]+>", " ");
+            cleanText = System.Text.RegularExpressions.Regex.Replace(cleanText, @"\s+", " ");
+            text.Append(cleanText.Trim());
+        }
+        catch { }
+
+        return text.ToString();
+    }
+    
+    
     private string ExtractTextFromPdf(string filePath)
     {
         var text = new System.Text.StringBuilder();
@@ -137,7 +164,6 @@ public class IndexerService : IIndexerService
 
         return text.ToString();
     }
-
     private Dictionary<string, int> Tokenize(string text)
     {
         var frequencies = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
