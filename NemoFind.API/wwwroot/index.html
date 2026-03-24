@@ -4,335 +4,937 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NemoFind</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --deep: #0A1628;
+            --ocean: #155a9c;
+            --mid: #00298f;
+            --blue: #2A7BB5;
+            --teal: #00589f;
+            --teal-light: #27b4ef;
+            --orange: #f6e403;
+            --orange-pale: rgba(232,129,58,0.12);
+            --white: #FFFFFF;
+            --white-90: rgba(255,255,255,0.92);
+            --white-60: rgba(241, 231, 231, 0.93);
+            --white-20: rgba(255,255,255,0.2);
+            --white-10: rgba(255,255,255,0.08);
+        }
+
+        html { scroll-behavior: smooth; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #ffffff;
-            color: #f0f0f0;
+            font-family: 'Inter', sans-serif;
+            background: var(--deep);
+            color: var(--white);
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
+        /* ── NAV ── */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 200;
+            padding: 0 48px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(10,22,40,0.6);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--white-10);
+        }
+
+        .nav-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: var(--white);
+        }
+
+        .nav-logo span { color: var(--teal-light); }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .nav-stat {
+            font-size: 0.72rem;
+            color: var(--white-60);
+            font-weight: 300;
+        }
+
+        .nav-stat b {
+            color: var(--white);
+            font-weight: 500;
+        }
+
+        .live-pip {
+            width: 5px; height: 5px;
+            border-radius: 50%;
+            background: var(--teal-light);
+            display: inline-block;
+            margin-right: 5px;
+            animation: pip 2.5s ease-in-out infinite;
+        }
+
+        @keyframes pip {
+            0%,100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(0.7); }
+        }
+
+        /* ── HERO SECTION ── */
         .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding-top: 60px;
+        }
+
+        /* Ocean gradient background */
+        .ocean-bg {
+            position: absolute;
+            inset: 0;
+            background:
+                    radial-gradient(ellipse at 50% 0%, #1A4A72 0%, transparent 60%),
+                    radial-gradient(ellipse at 20% 100%, #0D3355 0%, transparent 50%),
+                    radial-gradient(ellipse at 80% 80%, #0A2840 0%, transparent 40%),
+                    linear-gradient(180deg, #0A1628 0%, #0D2E4E 40%, #0A1628 100%);
+        }
+
+        /* SVG Ocean waves */
+        .waves-container {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 45%;
+            overflow: hidden;
+        }
+
+        .wave {
+            position: absolute;
+            bottom: 0;
+            width: 200%;
+            left: -50%;
+        }
+
+        .wave-1 {
+            animation: waveMove 8s linear infinite;
+            opacity: 0.12;
+        }
+
+        .wave-2 {
+            animation: waveMove 12s linear infinite reverse;
+            opacity: 0.08;
+            bottom: 20px;
+        }
+
+        .wave-3 {
+            animation: waveMove 6s linear infinite;
+            opacity: 0.06;
+            bottom: 40px;
+        }
+
+        @keyframes waveMove {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(25%); }
+        }
+
+        /* Whale watercolor SVG */
+        .whale-container {
+            position: absolute;
+            right: -2%;
+            bottom: 8%;
+            width: 55%;
+            max-width: 700px;
+            opacity: 0.18;
+            pointer-events: none;
+            filter: blur(0.5px);
+        }
+
+        /* Floating particles */
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--teal-light);
+            pointer-events: none;
+            animation: floatUp linear infinite;
+            opacity: 0;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.2; }
+            100% { transform: translateY(-300px) scale(0.3); opacity: 0; }
+        }
+
+        /* ── HERO CONTENT ── */
+        .hero-content {
+            position: relative;
+            z-index: 10;
             text-align: center;
-            padding: 60px 20px 40px;
-        }
-
-        .hero h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            color: #ff6b35;
-            margin-bottom: 8px;
-        }
-
-        .hero p {
-            color: #000000;
-            font-style: italic;
-            font-size: 1rem;
-        }
-
-        .search-container {
+            padding: 0 24px;
             max-width: 700px;
             margin: 0 auto;
-            padding: 0 20px;
         }
 
-        .search-box {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 16px;
+        .hero-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--teal-light);
+            border: 1px solid rgba(35,196,171,0.25);
+            padding: 5px 14px;
+            border-radius: 100px;
+            margin-bottom: 28px;
+            background: rgba(35, 166, 196, 0.06);
         }
 
-        .search-box input {
-            flex: 1;
-            padding: 16px 20px;
-            font-size: 1.1rem;
-            border: 2px solid #333;
-            border-radius: 12px;
-            background: #1a1a1a;
-            color: #f0f0f0;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .search-box input:focus {
-            border-color: #ff6b35;
-        }
-
-        .search-box button {
-            padding: 16px 28px;
-            background: #ff6b35;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .search-box button:hover { background: #e55a25; }
-
-        .filters {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-        }
-
-        .filters select {
-            padding: 8px 14px;
-            background: #1a1a1a;
-            color: #ccc;
-            border: 1px solid #333;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            cursor: pointer;
-        }
-
-        .stats-bar {
-            text-align: center;
-            color: #555;
-            font-size: 0.85rem;
+        .hero-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(3rem, 7vw, 5.5rem);
+            font-weight: 400;
+            line-height: 1.05;
+            letter-spacing: -1px;
+            color: var(--white);
             margin-bottom: 20px;
         }
 
-        .results-info {
-            color: #888;
-            font-size: 0.9rem;
-            margin-bottom: 16px;
+        .hero-title em {
+            font-style: italic;
+            color: var(--teal-light);
         }
 
-        .result-card {
-            background: #1a1a1a;
-            border: 1px solid #2a2a2a;
-            border-radius: 12px;
-            padding: 18px 20px;
-            margin-bottom: 12px;
-            transition: border-color 0.2s;
-            cursor: pointer;
+        .hero-title .accent { color: var(--orange); font-style: italic; }
+
+        .hero-sub {
+            font-size: 0.95rem;
+            color: var(--white-60);
+            font-weight: 300;
+            line-height: 1.7;
+            max-width: 420px;
+            margin: 0 auto 48px;
         }
 
-        .result-card:hover { border-color: #ff6b35; }
+        /* ── SEARCH CARD ── */
+        .search-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 28px;
+            width: 100%;
+            max-width: 580px;
+            margin: 0 auto;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.08);
+        }
 
-        .result-header {
+        .search-row {
             display: flex;
-            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .search-input {
+            flex: 1;
+            border: 1.5px solid #E8E5DF;
+            border-radius: 12px;
+            padding: 13px 18px;
+            font-size: 0.93rem;
+            font-family: 'Inter', sans-serif;
+            color: #1A1A18;
+            outline: none;
+            background: #FAFAF8;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .search-input::placeholder { color: #ABABAB; }
+
+        .search-input:focus {
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px rgba(27,158,138,0.1);
+            background: white;
+        }
+
+        .search-btn {
+            background: var(--teal);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 13px 22px;
+            font-size: 0.87rem;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            white-space: nowrap;
+        }
+
+        .search-btn:hover { background: #067cd3; }
+        .search-btn:active { transform: scale(0.97); }
+
+        .search-filters {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
             align-items: center;
+        }
+
+        .filter-select {
+            padding: 6px 12px;
+            border: 1px solid #E2DFDA;
+            border-radius: 8px;
+            background: #F6F4F0;
+            font-size: 0.78rem;
+            font-family: 'Inter', sans-serif;
+            color: #067cd3;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            transition: border-color 0.15s;
+        }
+
+        .filter-select:focus { border-color: var(--teal); }
+
+        .reindex-btn {
+            margin-left: auto;
+            padding: 6px 12px;
+            border: 1px solid rgb(0, 41, 143);
+            border-radius: 8px;
+            background: transparent;
+            font-size: 0.75rem;
+            font-family: 'Inter', sans-serif;
+            color: var(--teal);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .reindex-btn:hover { background: var(--teal); color: white; }
+
+        /* ── SCROLL HINT ── */
+        .scroll-hint {
+            position: absolute;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.68rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--white-60);
+            animation: fadeUpDown 2s ease-in-out infinite;
+        }
+
+        @keyframes fadeUpDown {
+            0%,100% { transform: translateX(-50%) translateY(0); opacity: 0.6; }
+            50% { transform: translateX(-50%) translateY(6px); opacity: 1; }
+        }
+
+        .scroll-arrow {
+            width: 20px; height: 20px;
+            border-right: 1.5px solid var(--white-60);
+            border-bottom: 1.5px solid var(--white-60);
+            transform: rotate(45deg);
+        }
+
+        /* ── RESULTS SECTION ── */
+        .results-section {
+            background: #F5F3EF;
+            min-height: 60vh;
+            padding: 60px 48px 100px;
+        }
+
+        .results-inner {
+            max-width: 780px;
+            margin: 0 auto;
+        }
+
+        .results-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+        }
+
+        .results-count {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            color: #1A1A18;
+            font-weight: 400;
+        }
+
+        .results-count em { font-style: italic; color: var(--teal); }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading-wave {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+
+        .loading-bar {
+            width: 3px;
+            height: 28px;
+            border-radius: 2px;
+            background: var(--teal);
+            animation: wave-bar 1.2s ease-in-out infinite;
+        }
+
+        .loading-bar:nth-child(2) { animation-delay: 0.15s; background: var(--blue); }
+        .loading-bar:nth-child(3) { animation-delay: 0.3s; background: var(--teal); }
+        .loading-bar:nth-child(4) { animation-delay: 0.45s; background: var(--blue); }
+        .loading-bar:nth-child(5) { animation-delay: 0.6s; background: var(--teal); }
+
+        @keyframes wave-bar {
+            0%,100% { transform: scaleY(0.4); opacity: 0.4; }
+            50% { transform: scaleY(1); opacity: 1; }
+        }
+
+        .loading-text { font-size: 0.85rem; color: #888; }
+
+        /* Empty */
+        .empty {
+            text-align: center;
+            padding: 70px 20px;
+        }
+
+        .empty-icon {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 4rem;
+            font-style: italic;
+            color: #D0CCC4;
+            margin-bottom: 16px;
+            line-height: 1;
+        }
+
+        .empty-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            color: #888;
             margin-bottom: 8px;
         }
 
-        .result-name {
-            font-weight: 600;
-            font-size: 1rem;
-            color: #ff6b35;
+        .empty-hint { font-size: 0.82rem; color: #BBB; }
+
+        /* Error */
+        .error-box {
+            background: #FEF0EA;
+            border: 1px solid rgba(232,129,58,0.25);
+            border-radius: 12px;
+            padding: 20px 24px;
+            font-size: 0.85rem;
+            color: var(--orange);
+            text-align: center;
         }
 
-        .result-score {
-            font-size: 0.8rem;
-            color: #555;
-            background: #111;
-            padding: 3px 8px;
-            border-radius: 20px;
+        /* Result cards */
+        .result-card {
+            background: white;
+            border-radius: 14px;
+            padding: 20px 22px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(0,0,0,0.06);
+            transition: all 0.2s;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 16px;
+            align-items: start;
+        }
+
+        .result-card:hover {
+            border-color: rgba(27,158,138,0.3);
+            box-shadow: 0 4px 20px rgba(27,158,138,0.08);
+            transform: translateY(-1px);
+        }
+
+        .result-left { min-width: 0; }
+
+        .result-top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        .file-badge {
+            font-size: 0.62rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            padding: 2px 7px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        .badge-pdf { background: rgba(232,129,58,0.1); color: var(--orange); }
+        .badge-docx { background: rgba(27,158,138,0.1); color: var(--teal); }
+        .badge-py { background: rgba(42,123,181,0.1); color: var(--blue); }
+        .badge-java { background: rgba(232,129,58,0.08); color: #C06020; }
+        .badge-default { background: #F0EDE6; color: #888; }
+
+        .result-name {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1A1A18;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .result-path {
-            font-size: 0.8rem;
-            color: #555;
-            margin-bottom: 8px;
-            word-break: break-all;
+            font-size: 0.72rem;
+            color: #ABABAB;
+            margin-bottom: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-family: monospace;
         }
 
         .result-meta {
             display: flex;
-            gap: 16px;
-            font-size: 0.8rem;
-            color: #666;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
         }
 
-        .result-meta span {
-            background: #111;
+        .meta-pill {
+            font-size: 0.7rem;
             padding: 2px 8px;
-            border-radius: 6px;
+            border-radius: 5px;
+            font-weight: 500;
         }
 
-        .score-bar {
-            height: 3px;
-            background: #2a2a2a;
-            border-radius: 2px;
-            margin-top: 10px;
+        .pill-matches { background: rgba(27,158,138,0.08); color: var(--teal); }
+        .pill-date { background: #F0EDE6; color: #888; }
+        .pill-score { background: rgba(10,22,40,0.05); color: #666; font-variant-numeric: tabular-nums; }
+
+        .score-track {
+            width: 60px;
+            height: 2px;
+            background: #EEE;
+            border-radius: 1px;
+            margin-top: 4px;
+            overflow: hidden;
         }
 
         .score-fill {
             height: 100%;
-            background: #ff6b35;
-            border-radius: 2px;
-            transition: width 0.4s;
+            background: linear-gradient(90deg, var(--teal), var(--blue));
+            border-radius: 1px;
+            transition: width 0.5s ease;
         }
 
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #444;
+        /* Action buttons */
+        .result-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex-shrink: 0;
         }
 
-        .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
-
-        .crawl-btn {
-            display: block;
-            margin: 20px auto;
-            padding: 12px 24px;
-            background: transparent;
-            color: #ff6b35;
-            border: 1px solid #ff6b35;
+        .action-btn {
+            padding: 7px 14px;
             border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
             cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.2s;
+            transition: all 0.15s;
+            white-space: nowrap;
+            border: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
 
-        .crawl-btn:hover {
-            background: #ff6b35;
+        .btn-open {
+            background: var(--teal);
             color: white;
         }
 
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #555;
+        .btn-open:hover { background: #168F7B; }
+
+        .btn-reveal {
+            background: #F0EDE6;
+            color: #5A5A56;
+        }
+
+        .btn-reveal:hover { background: #E5E2DC; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 640px) {
+            nav { padding: 0 20px; }
+            .nav-right { gap: 12px; }
+            .hero-content { padding: 0 16px; }
+            .search-card { padding: 20px 16px; border-radius: 16px; }
+            .results-section { padding: 40px 20px 80px; }
+            .result-card { grid-template-columns: 1fr; }
+            .result-actions { flex-direction: row; }
+            .whale-container { width: 90%; right: -10%; opacity: 0.12; }
         }
     </style>
 </head>
 <body>
-<div class="hero">
-    <h1>NemoFind</h1>
-    <p>Just keep swimming, until you find your file.</p>
-</div>
 
-<div class="search-container">
-    <div class="search-box">
-        <input
-                type="text"
-                id="searchInput"
-                placeholder="Search your Mac..."
-                autofocus
-        />
-        <button onclick="search()">Search</button>
+<!-- NAV -->
+<nav>
+    <div class="nav-logo">Nemo<span>Find</span></div>
+    <div class="nav-right" id="navStats">
+        <span class="nav-stat"><span class="live-pip"></span>connecting...</span>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="ocean-bg"></div>
+
+    <!-- Animated waves SVG -->
+    <div class="waves-container">
+        <svg class="wave wave-1" viewBox="0 0 1440 320" preserveAspectRatio="none" fill="none">
+            <path d="M0,160 C180,240 360,80 540,160 C720,240 900,80 1080,160 C1260,240 1350,120 1440,160 L1440,320 L0,320 Z" fill="var(--teal)"/>
+        </svg>
+        <svg class="wave wave-2" viewBox="0 0 1440 320" preserveAspectRatio="none" fill="none">
+            <path d="M0,200 C200,120 400,280 600,200 C800,120 1000,280 1200,200 C1320,160 1380,220 1440,200 L1440,320 L0,320 Z" fill="var(--blue)"/>
+        </svg>
+        <svg class="wave wave-3" viewBox="0 0 1440 320" preserveAspectRatio="none" fill="none">
+            <path d="M0,240 C160,200 320,280 480,240 C640,200 800,280 960,240 C1120,200 1280,260 1440,240 L1440,320 L0,320 Z" fill="#1A4A72"/>
+        </svg>
     </div>
 
-    <div class="filters">
-        <select id="fileType">
-            <option value="">All file types</option>
-            <option value="pdf">PDF</option>
-            <option value="txt">Text</option>
-            <option value="md">Markdown</option>
-            <option value="cs">C#</option>
-            <option value="py">Python</option>
-            <option value="js">JavaScript</option>
-            <option value="json">JSON</option>
-        </select>
+    <!-- Whale watercolor SVG illustration -->
+    <div class="whale-container">
+        <svg viewBox="0 0 600 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <radialGradient id="wg1" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="#23C4AB" stop-opacity="0.6"/>
+                    <stop offset="60%" stop-color="#2A7BB5" stop-opacity="0.4"/>
+                    <stop offset="100%" stop-color="#0A1628" stop-opacity="0"/>
+                </radialGradient>
+                <radialGradient id="wg2" cx="40%" cy="40%" r="60%">
+                    <stop offset="0%" stop-color="#2A7BB5" stop-opacity="0.5"/>
+                    <stop offset="100%" stop-color="#0D2E4E" stop-opacity="0"/>
+                </radialGradient>
+                <filter id="blur1">
+                    <feGaussianBlur stdDeviation="4"/>
+                </filter>
+                <filter id="blur2">
+                    <feGaussianBlur stdDeviation="8"/>
+                </filter>
+                <filter id="blur3">
+                    <feGaussianBlur stdDeviation="2"/>
+                </filter>
+            </defs>
 
-        <select id="sinceDays">
-            <option value="">Any time</option>
-            <option value="1">Last 24 hours</option>
-            <option value="7">Last 7 days</option>
-            <option value="30">Last 30 days</option>
-            <option value="90">Last 3 months</option>
-        </select>
+            <!-- Watercolor wash background glow -->
+            <ellipse cx="310" cy="210" rx="260" ry="170" fill="url(#wg2)" filter="url(#blur2)"/>
+            <ellipse cx="300" cy="200" rx="220" ry="140" fill="url(#wg1)" filter="url(#blur1)"/>
+
+            <!-- Whale body — large flowing shape -->
+            <path d="M80,220 C100,180 150,140 220,130 C290,120 360,125 420,150 C480,175 520,200 540,220 C560,240 555,265 530,275 C505,285 470,280 440,270 C410,260 380,248 340,252 C300,256 265,270 230,265 C195,260 160,250 130,240 C100,230 70,250 65,235 Z"
+                  fill="#1B9E8A" opacity="0.35" filter="url(#blur3)"/>
+
+            <!-- Belly lighter -->
+            <path d="M200,175 C240,160 320,158 390,172 C440,182 490,205 515,225 C530,238 520,258 490,262 C460,266 420,255 380,252 C340,249 300,258 260,258 C225,258 190,250 175,238 C162,228 170,185 200,175 Z"
+                  fill="#23C4AB" opacity="0.25" filter="url(#blur3)"/>
+
+            <!-- Tail fluke -->
+            <path d="M530,220 C555,210 590,195 598,210 C606,225 585,248 565,255 C548,261 535,250 530,240 Z"
+                  fill="#1B9E8A" opacity="0.4"/>
+            <path d="M530,228 C552,235 582,242 585,255 C588,268 565,272 548,265 C534,258 530,245 530,228 Z"
+                  fill="#2A7BB5" opacity="0.3"/>
+
+            <!-- Pectoral fin -->
+            <path d="M250,185 C240,210 230,240 245,258 C255,270 270,265 280,255 C270,235 265,210 250,185 Z"
+                  fill="#168F7B" opacity="0.35"/>
+
+            <!-- Eye -->
+            <circle cx="195" cy="200" r="8" fill="#0A1628" opacity="0.5"/>
+            <circle cx="197" cy="198" r="3" fill="white" opacity="0.6"/>
+
+            <!-- Blowhole water splash -->
+            <path d="M300,128 C298,110 296,90 302,75 C305,65 310,60 308,75 C310,85 315,95 312,110 Z"
+                  fill="#23C4AB" opacity="0.4" filter="url(#blur3)"/>
+            <path d="M308,125 C320,108 335,88 345,72 C350,62 348,55 342,68 C336,80 328,95 322,112 Z"
+                  fill="#2A7BB5" opacity="0.35" filter="url(#blur3)"/>
+            <path d="M295,130 C280,115 265,95 258,78 C254,67 258,60 264,72 C270,84 278,98 285,114 Z"
+                  fill="#23C4AB" opacity="0.3" filter="url(#blur3)"/>
+
+            <!-- Water droplets -->
+            <ellipse cx="340" cy="65" rx="4" ry="6" fill="#23C4AB" opacity="0.5" transform="rotate(-20 340 65)"/>
+            <ellipse cx="358" cy="72" rx="3" ry="5" fill="#2A7BB5" opacity="0.4" transform="rotate(15 358 72)"/>
+            <ellipse cx="262" cy="68" rx="3" ry="5" fill="#23C4AB" opacity="0.4" transform="rotate(-15 262 68)"/>
+            <ellipse cx="247" cy="80" rx="2" ry="4" fill="#2A7BB5" opacity="0.3" transform="rotate(10 247 80)"/>
+
+            <!-- Watercolor texture splotches -->
+            <ellipse cx="180" cy="230" rx="40" ry="25" fill="#1B9E8A" opacity="0.08" filter="url(#blur1)"/>
+            <ellipse cx="420" cy="200" rx="50" ry="30" fill="#2A7BB5" opacity="0.08" filter="url(#blur1)"/>
+            <ellipse cx="320" cy="165" rx="35" ry="20" fill="#23C4AB" opacity="0.1" filter="url(#blur1)"/>
+
+            <!-- Small fish companions -->
+            <ellipse cx="100" cy="280" rx="12" ry="7" fill="#E8813A" opacity="0.5" transform="rotate(-10 100 280)"/>
+            <path d="M88,280 L80,275 L80,285 Z" fill="#E8813A" opacity="0.5"/>
+
+            <ellipse cx="480" cy="310" rx="8" ry="5" fill="#E8813A" opacity="0.4" transform="rotate(15 480 310)"/>
+            <path d="M472,310 L465,307 L465,313 Z" fill="#E8813A" opacity="0.4"/>
+
+            <ellipse cx="140" cy="310" rx="7" ry="4" fill="#23C4AB" opacity="0.4" transform="rotate(-5 140 310)"/>
+            <path d="M133,310 L127,307 L127,313 Z" fill="#23C4AB" opacity="0.4"/>
+
+            <!-- Bubbles -->
+            <circle cx="160" cy="260" r="4" fill="none" stroke="#23C4AB" stroke-width="1.5" opacity="0.4"/>
+            <circle cx="155" cy="248" r="2.5" fill="none" stroke="#23C4AB" stroke-width="1.2" opacity="0.3"/>
+            <circle cx="163" cy="238" r="2" fill="none" stroke="#2A7BB5" stroke-width="1" opacity="0.3"/>
+
+            <circle cx="455" cy="270" r="3.5" fill="none" stroke="#23C4AB" stroke-width="1.5" opacity="0.35"/>
+            <circle cx="460" cy="260" r="2" fill="none" stroke="#2A7BB5" stroke-width="1" opacity="0.25"/>
+
+            <!-- Kelp/seaweed at bottom -->
+            <path d="M50,380 C55,360 48,340 55,320 C62,300 68,310 62,330 C58,345 65,355 60,370 Z"
+                  fill="#1B9E8A" opacity="0.25"/>
+            <path d="M560,380 C555,355 562,335 556,315 C550,295 544,308 550,328 C555,343 548,358 554,375 Z"
+                  fill="#1B9E8A" opacity="0.2"/>
+            <path d="M35,380 C42,365 36,345 42,328 C48,310 53,320 47,338 C43,350 49,360 44,375 Z"
+                  fill="#23C4AB" opacity="0.18"/>
+        </svg>
     </div>
 
-    <div class="stats-bar" id="statsBar">Loading stats...</div>
+    <!-- Floating particles -->
+    <div class="particle" style="width:4px;height:4px;left:15%;bottom:30%;animation-duration:6s;animation-delay:0s;"></div>
+    <div class="particle" style="width:3px;height:3px;left:30%;bottom:20%;animation-duration:8s;animation-delay:1s;"></div>
+    <div class="particle" style="width:5px;height:5px;left:60%;bottom:25%;animation-duration:7s;animation-delay:2s;"></div>
+    <div class="particle" style="width:3px;height:3px;left:75%;bottom:35%;animation-duration:9s;animation-delay:0.5s;"></div>
+    <div class="particle" style="width:4px;height:4px;left:85%;bottom:15%;animation-duration:6s;animation-delay:3s;"></div>
 
-    <div id="results"></div>
+    <!-- Hero text + search -->
+    <div class="hero-content">
+        <div class="hero-label">
+            <span class="live-pip"></span> Personal File Search
+        </div>
+        <h1 class="hero-title">
+            Find anything<br>on your <em>Device,</em><br><span class="accent">instantly</span>
+        </h1>
+        <p class="hero-sub">Search across PDFs, Word docs, code files and notes. All stored locally in your device.</p>
 
-    <button class="crawl-btn" onclick="triggerCrawl()">
-         Re-index my files
-    </button>
-</div>
+        <div class="search-card">
+            <div class="search-row">
+                <input class="search-input" id="searchInput" type="text" placeholder="Try 'rewa', 'java'..." autofocus />
+                <button class="search-btn" onclick="search()">Search</button>
+            </div>
+            <div class="search-filters">
+                <select class="filter-select" id="fileType">
+                    <option value="">All file types</option>
+                    <option value="pdf">PDF</option>
+                    <option value="docx">Word</option>
+                    <option value="txt">Text</option>
+                    <option value="csv">CSV</option>
+                </select>
+                <select class="filter-select" id="sinceDays">
+                    <option value="">Any time</option>
+                    <option value="1">Today</option>
+                    <option value="7">This week</option>
+                    <option value="30">This month</option>
+                    <option value="90">Last 3 months</option>
+                    <option value="365">This year</option>
+                </select>
+                <button class="reindex-btn" id="reindexBtn" onclick="triggerCrawl()">↺ Re-index</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="scroll-hint" id="scrollHint">
+        <span>results below</span>
+        <div class="scroll-arrow"></div>
+    </div>
+</section>
+
+<!-- RESULTS -->
+<section class="results-section" id="resultsSection">
+    <div class="results-inner" id="resultsArea">
+        <div class="empty">
+            <div class="empty-icon">~</div>
+            <div class="empty-title">Ready to dive in</div>
+            <div class="empty-hint">Type a keyword above to search your indexed files</div>
+        </div>
+    </div>
+</section>
 
 <script>
     const API = 'http://localhost:5258/api';
 
-    // Search on Enter key
     document.getElementById('searchInput').addEventListener('keydown', e => {
         if (e.key === 'Enter') search();
     });
 
+    function getBadgeClass(ext) {
+        const e = (ext || '').replace('.','').toLowerCase();
+        if (e === 'pdf') return 'badge-pdf';
+        if (e === 'docx') return 'badge-docx';
+        if (e === 'py') return 'badge-py';
+        if (e === 'java') return 'badge-java';
+        return 'badge-default';
+    }
+
+    function fmtExt(ext) {
+        return (ext || '').replace('.','').toUpperCase() || 'FILE';
+    }
+
+    function fmtDate(d) {
+        return new Date(d).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'2-digit' });
+    }
+
     async function search() {
         const q = document.getElementById('searchInput').value.trim();
         const type = document.getElementById('fileType').value;
-        const sinceDays = document.getElementById('sinceDays').value;
-
+        const days = document.getElementById('sinceDays').value;
         if (!q) return;
 
-        document.getElementById('results').innerHTML =
-            '<div class="loading"> Searching...</div>';
+        // Scroll to results
+        document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+
+        document.getElementById('resultsArea').innerHTML = `
+    <div class="loading">
+      <div class="loading-wave">
+        <div class="loading-bar"></div>
+        <div class="loading-bar"></div>
+        <div class="loading-bar"></div>
+        <div class="loading-bar"></div>
+        <div class="loading-bar"></div>
+      </div>
+      <div class="loading-text">Swimming through your files...</div>
+    </div>`;
 
         try {
             let url = `${API}/search?q=${encodeURIComponent(q)}`;
             if (type) url += `&type=${type}`;
-            if (sinceDays) url += `&sinceDays=${sinceDays}`;
-
+            if (days) url += `&sinceDays=${days}`;
             const res = await fetch(url);
             const data = await res.json();
-            renderResults(data, q);
+            render(data, q);
         } catch {
-            document.getElementById('results').innerHTML =
-                '<div class="empty-state"><div class="icon">⚠️</div>Could not connect to NemoFind API.<br>Make sure the API is running.</div>';
+            document.getElementById('resultsArea').innerHTML = `
+      <div class="error-box">
+        Could not connect to NemoFind API.<br>
+        <small>Make sure the API is running at localhost:5258</small>
+      </div>`;
         }
     }
 
-    function renderResults(results, query) {
-        const container = document.getElementById('results');
-
+    function render(results, query) {
+        const area = document.getElementById('resultsArea');
         if (!results || results.length === 0) {
-            container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="icon">🔍</div>
-                        No files found for "<strong>${query}</strong>"<br>
-                        <small>Try different keywords or re-index your files below</small>
-                    </div>`;
+            area.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">∅</div>
+        <div class="empty-title">Nothing found for "${query}"</div>
+        <div class="empty-hint">Try different keywords, or click Re-index to crawl more files</div>
+      </div>`;
             return;
         }
 
-        const maxScore = Math.max(...results.map(r => r.relevanceScore));
+        const max = Math.max(...results.map(r => r.relevanceScore));
 
-        container.innerHTML = `
-                <div class="results-info">${results.length} result${results.length !== 1 ? 's' : ''} for "<strong>${query}</strong>"</div>
-                ${results.map(r => `
-                    <div class="result-card">
-                        <div class="result-header">
-                            <span class="result-name">📄 ${r.fileName}</span>
-                            <span class="result-score">Score: ${r.relevanceScore}</span>
-                        </div>
-                        <div class="result-path">${r.filePath}</div>
-                        <div class="result-meta">
-                            <span>${r.extension.toUpperCase().replace('.', '')}</span>
-                            <span>${r.matchCount} match${r.matchCount !== 1 ? 'es' : ''}</span>
-                            <span>${new Date(r.modifiedAt).toLocaleDateString()}</span>
-                        </div>
-                        <div class="score-bar">
-                            <div class="score-fill" style="width: ${(r.relevanceScore / maxScore * 100).toFixed(1)}%"></div>
-                        </div>
-                    </div>
-                `).join('')}`;
+        area.innerHTML = `
+    <div class="results-header-row">
+      <div class="results-count"><em>${results.length}</em> result${results.length !== 1 ? 's' : ''} for "${query}"</div>
+    </div>
+    ${results.map((r, i) => {
+            const pct = max > 0 ? Math.round(r.relevanceScore / max * 100) : 0;
+            const ext = fmtExt(r.extension);
+            const encodedPath = encodeURIComponent(r.filePath);
+
+            return `
+      <div class="result-card">
+        <div class="result-left">
+          <div class="result-top">
+            <span class="file-badge ${getBadgeClass(r.extension)}">${ext}</span>
+            <div class="result-name">${r.fileName}</div>
+          </div>
+          <div class="result-path">${r.filePath}</div>
+          <div class="result-meta">
+            <span class="meta-pill pill-matches">${r.matchCount} match${r.matchCount !== 1 ? 'es' : ''}</span>
+            <span class="meta-pill pill-date">${fmtDate(r.modifiedAt)}</span>
+            <span class="meta-pill pill-score">${r.relevanceScore.toFixed(3)}</span>
+          </div>
+          <div class="score-track" style="margin-top:10px;">
+            <div class="score-fill" style="width:${pct}%"></div>
+          </div>
+        </div>
+        <div class="result-actions">
+          <a class="action-btn btn-open" href="${API}/files/open?path=${encodedPath}" target="_blank" onclick="openFile(event, '${r.filePath}')">
+            ↗ Open
+          </a>
+          <button class="action-btn btn-reveal" onclick="revealInFinder('${r.filePath.replace(/'/g, "\\'")}')">
+            ⌘ Reveal
+          </button>
+        </div>
+      </div>`;
+        }).join('')}`;
+    }
+
+    async function openFile(e, path) {
+        e.preventDefault();
+        try {
+            await fetch(`${API}/files/open`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ path })
+            });
+        } catch {
+            alert('Could not open file. Make sure the API is running.');
+        }
+    }
+
+    async function revealInFinder(path) {
+        try {
+            await fetch(`${API}/files/reveal`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ path })
+            });
+        } catch {
+            alert('Could not reveal file in Finder.');
+        }
     }
 
     async function triggerCrawl() {
-        const btn = document.querySelector('.crawl-btn');
-        btn.textContent = '🐠 Crawling... this may take a moment';
+        const btn = document.getElementById('reindexBtn');
+        btn.textContent = '↻ Crawling...';
         btn.disabled = true;
-
         try {
             await fetch(`${API}/crawl`, { method: 'POST' });
-            btn.textContent = '✅ Crawl started in background!';
+            btn.textContent = '✓ Started!';
             setTimeout(() => {
-                btn.textContent = '🔄 Re-index my files';
+                btn.textContent = '↺ Re-index';
                 btn.disabled = false;
                 loadStats();
             }, 3000);
         } catch {
-            btn.textContent = '⚠️ Could not start crawl';
+            btn.textContent = '↺ Re-index';
             btn.disabled = false;
         }
     }
@@ -340,15 +942,17 @@
     async function loadStats() {
         try {
             const res = await fetch(`${API}/search/stats`);
-            const stats = await res.json();
-            document.getElementById('statsBar').textContent =
-                `${stats.totalFiles.toLocaleString()} files indexed • ${stats.totalWords.toLocaleString()} unique words • ${(stats.databaseSizeBytes / 1024).toFixed(1)} KB database`;
+            const s = await res.json();
+            document.getElementById('navStats').innerHTML = `
+      <span class="nav-stat"><span class="live-pip"></span><b>${s.totalFiles.toLocaleString()}</b> files</span>
+      <span class="nav-stat"><b>${s.totalWords.toLocaleString()}</b> words</span>
+      <span class="nav-stat"><b>${(s.databaseSizeBytes/1024).toFixed(0)} KB</b> index</span>`;
         } catch {
-            document.getElementById('statsBar').textContent = 'API not connected';
+            document.getElementById('navStats').innerHTML =
+                `<span class="nav-stat">API offline</span>`;
         }
     }
 
-    // Load stats on page open
     loadStats();
 </script>
 </body>

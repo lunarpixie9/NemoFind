@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using NemoFind.Core.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace NemoFind.API.Controllers;
 
@@ -7,11 +8,11 @@ namespace NemoFind.API.Controllers;
 [Route("api/[controller]")]
 public class CrawlController : ControllerBase
 {
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IServiceScopeFactory _scopeFactory;
 
-    public CrawlController(IServiceProvider serviceProvider)
+    public CrawlController(IServiceScopeFactory scopeFactory)
     {
-        _serviceProvider = serviceProvider;
+        _scopeFactory = scopeFactory;
     }
 
     [HttpPost]
@@ -41,20 +42,23 @@ public class CrawlController : ControllerBase
                     .Where(f => !f.Contains(".git/"))
                     .Where(f => !f.Contains("/bin/"))
                     .Where(f => !f.Contains("/obj/"))
+                    .Where(f => !f.Contains("mysql-connector"))
+                    .Where(f => !f.Contains("pygame"))
+                    .Where(f => !f.Contains("eclipse-"))
                     .ToList();
 
                 Console.WriteLine($"  Found {files.Count} supported files");
 
-                // Process 5 files at a time
-                var semaphore = new SemaphoreSlim(5);
-                var tasks = files.Select(async file =>
+                foreach (var file in files)
                 {
-                    await semaphore.WaitAsync();
                     try
                     {
-                        using var scope = _serviceProvider.CreateScope();
-                        var crawler = scope.ServiceProvider.GetRequiredService<ICrawlerService>();
-                        var indexer = scope.ServiceProvider.GetRequiredService<IIndexerService>();
+                        // IServiceScopeFactory lives for app lifetime — never disposed
+                        using var scope = _scopeFactory.CreateScope();
+                        var crawler = scope.ServiceProvider
+                            .GetRequiredService<ICrawlerService>();
+                        var indexer = scope.ServiceProvider
+                            .GetRequiredService<IIndexerService>();
 
                         await crawler.CrawlFileAsync(file);
                         await indexer.IndexFileAsync(file);
@@ -63,13 +67,8 @@ public class CrawlController : ControllerBase
                     {
                         Console.WriteLine($"  Skipping {System.IO.Path.GetFileName(file)}: {ex.Message}");
                     }
-                    finally
-                    {
-                        semaphore.Release();
-                    }
-                });
+                }
 
-                await Task.WhenAll(tasks);
                 Console.WriteLine("🐠 Crawl and index complete!");
             }
             catch (Exception ex)
