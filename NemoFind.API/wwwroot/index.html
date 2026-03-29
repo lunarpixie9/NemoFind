@@ -22,6 +22,8 @@
             --white-60: rgba(241, 231, 231, 0.93);
             --white-20: rgba(255,255,255,0.2);
             --white-10: rgba(255,255,255,0.08);
+            --wiki: #3366cc;
+            --wiki-pale: rgba(51,102,204,0.08);
         }
 
         html { scroll-behavior: smooth; }
@@ -102,7 +104,6 @@
             padding-top: 60px;
         }
 
-        /* Ocean gradient background */
         .ocean-bg {
             position: absolute;
             inset: 0;
@@ -113,7 +114,6 @@
                     linear-gradient(180deg, #0A1628 0%, #0D2E4E 40%, #0A1628 100%);
         }
 
-        /* SVG Ocean waves */
         .waves-container {
             position: absolute;
             bottom: 0; left: 0; right: 0;
@@ -128,29 +128,15 @@
             left: -50%;
         }
 
-        .wave-1 {
-            animation: waveMove 8s linear infinite;
-            opacity: 0.12;
-        }
-
-        .wave-2 {
-            animation: waveMove 12s linear infinite reverse;
-            opacity: 0.08;
-            bottom: 20px;
-        }
-
-        .wave-3 {
-            animation: waveMove 6s linear infinite;
-            opacity: 0.06;
-            bottom: 40px;
-        }
+        .wave-1 { animation: waveMove 8s linear infinite; opacity: 0.12; }
+        .wave-2 { animation: waveMove 12s linear infinite reverse; opacity: 0.08; bottom: 20px; }
+        .wave-3 { animation: waveMove 6s linear infinite; opacity: 0.06; bottom: 40px; }
 
         @keyframes waveMove {
             0% { transform: translateX(0); }
             100% { transform: translateX(25%); }
         }
 
-        /* Whale watercolor SVG */
         .whale-container {
             position: absolute;
             right: -2%;
@@ -162,7 +148,6 @@
             filter: blur(0.5px);
         }
 
-        /* Floating particles */
         .particle {
             position: absolute;
             border-radius: 50%;
@@ -179,7 +164,6 @@
             100% { transform: translateY(-300px) scale(0.3); opacity: 0; }
         }
 
-        /* ── HERO CONTENT ── */
         .hero-content {
             position: relative;
             z-index: 10;
@@ -215,11 +199,7 @@
             margin-bottom: 20px;
         }
 
-        .hero-title em {
-            font-style: italic;
-            color: var(--teal-light);
-        }
-
+        .hero-title em { font-style: italic; color: var(--teal-light); }
         .hero-title .accent { color: var(--orange); font-style: italic; }
 
         .hero-sub {
@@ -242,11 +222,7 @@
             box-shadow: 0 24px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.08);
         }
 
-        .search-row {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 14px;
-        }
+        .search-row { display: flex; gap: 10px; margin-bottom: 14px; }
 
         .search-input {
             flex: 1;
@@ -262,7 +238,6 @@
         }
 
         .search-input::placeholder { color: #ABABAB; }
-
         .search-input:focus {
             border-color: var(--teal);
             box-shadow: 0 0 0 3px rgba(27,158,138,0.1);
@@ -383,11 +358,39 @@
 
         .results-count em { font-style: italic; color: var(--teal); }
 
-        /* Loading */
-        .loading {
-            text-align: center;
-            padding: 60px 20px;
+        /* ── SECTION DIVIDER ── */
+        .results-section-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 32px 0 16px;
         }
+
+        .results-section-label:first-child { margin-top: 0; }
+
+        .section-label-text {
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+            color: #888;
+            white-space: nowrap;
+        }
+
+        .section-label-line {
+            flex: 1;
+            height: 1px;
+            background: #E2DFDA;
+        }
+
+        .section-label-count {
+            font-size: 0.68rem;
+            color: #BBB;
+            white-space: nowrap;
+        }
+
+        /* Loading */
+        .loading { text-align: center; padding: 60px 20px; }
 
         .loading-wave {
             display: flex;
@@ -417,10 +420,7 @@
         .loading-text { font-size: 0.85rem; color: #888; }
 
         /* Empty */
-        .empty {
-            text-align: center;
-            padding: 70px 20px;
-        }
+        .empty { text-align: center; padding: 70px 20px; }
 
         .empty-icon {
             font-family: 'Cormorant Garamond', serif;
@@ -440,7 +440,6 @@
 
         .empty-hint { font-size: 0.82rem; color: #BBB; }
 
-        /* Error */
         .error-box {
             background: #FEF0EA;
             border: 1px solid rgba(232,129,58,0.25);
@@ -451,7 +450,7 @@
             text-align: center;
         }
 
-        /* Result cards */
+        /* ── FILE RESULT CARDS ── */
         .result-card {
             background: white;
             border-radius: 14px;
@@ -489,11 +488,23 @@
             flex-shrink: 0;
         }
 
-        .badge-pdf { background: rgba(232,129,58,0.1); color: var(--orange); }
+        .badge-pdf  { background: rgba(232,129,58,0.1); color: var(--orange); }
         .badge-docx { background: rgba(27,158,138,0.1); color: var(--teal); }
-        .badge-py { background: rgba(42,123,181,0.1); color: var(--blue); }
+        .badge-py   { background: rgba(42,123,181,0.1); color: var(--blue); }
         .badge-java { background: rgba(232,129,58,0.08); color: #C06020; }
         .badge-default { background: #F0EDE6; color: #888; }
+
+        /* Wikipedia badge */
+        .badge-wiki {
+            background: rgba(51,102,204,0.1);
+            color: var(--wiki);
+            font-size: 0.62rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            padding: 2px 7px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
 
         .result-name {
             font-size: 0.95rem;
@@ -514,6 +525,18 @@
             font-family: monospace;
         }
 
+        /* Wikipedia snippet — allows wrapping unlike file path */
+        .result-snippet {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 10px;
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
         .result-meta {
             display: flex;
             gap: 8px;
@@ -529,8 +552,10 @@
         }
 
         .pill-matches { background: rgba(27,158,138,0.08); color: var(--teal); }
-        .pill-date { background: #F0EDE6; color: #888; }
-        .pill-score { background: rgba(10,22,40,0.05); color: #666; font-variant-numeric: tabular-nums; }
+        .pill-date    { background: #F0EDE6; color: #888; }
+        .pill-score   { background: rgba(10,22,40,0.05); color: #666; font-variant-numeric: tabular-nums; }
+        .pill-words   { background: rgba(51,102,204,0.07); color: var(--wiki); }
+        .pill-wiki    { background: rgba(51,102,204,0.07); color: var(--wiki); }
 
         .score-track {
             width: 60px;
@@ -546,6 +571,12 @@
             background: linear-gradient(90deg, var(--teal), var(--blue));
             border-radius: 1px;
             transition: width 0.5s ease;
+        }
+
+        /* Wikipedia card hover uses wiki blue */
+        .result-card.wiki-card:hover {
+            border-color: rgba(51,102,204,0.3);
+            box-shadow: 0 4px 20px rgba(51,102,204,0.08);
         }
 
         /* Action buttons */
@@ -572,18 +603,13 @@
             gap: 5px;
         }
 
-        .btn-open {
-            background: var(--teal);
-            color: white;
-        }
-
+        .btn-open   { background: var(--teal); color: white; }
         .btn-open:hover { background: #168F7B; }
 
-        .btn-reveal {
-            background: #F0EDE6;
-            color: #5A5A56;
-        }
+        .btn-wiki   { background: var(--wiki); color: white; }
+        .btn-wiki:hover { background: #2255bb; }
 
+        .btn-reveal { background: #F0EDE6; color: #5A5A56; }
         .btn-reveal:hover { background: #E5E2DC; }
 
         /* ── RESPONSIVE ── */
@@ -613,7 +639,6 @@
 <section class="hero">
     <div class="ocean-bg"></div>
 
-    <!-- Animated waves SVG -->
     <div class="waves-container">
         <svg class="wave wave-1" viewBox="0 0 1440 320" preserveAspectRatio="none" fill="none">
             <path d="M0,160 C180,240 360,80 540,160 C720,240 900,80 1080,160 C1260,240 1350,120 1440,160 L1440,320 L0,320 Z" fill="var(--teal)"/>
@@ -626,7 +651,6 @@
         </svg>
     </div>
 
-    <!-- Whale watercolor SVG illustration -->
     <div class="whale-container">
         <svg viewBox="0 0 600 400" fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
@@ -639,98 +663,52 @@
                     <stop offset="0%" stop-color="#2A7BB5" stop-opacity="0.5"/>
                     <stop offset="100%" stop-color="#0D2E4E" stop-opacity="0"/>
                 </radialGradient>
-                <filter id="blur1">
-                    <feGaussianBlur stdDeviation="4"/>
-                </filter>
-                <filter id="blur2">
-                    <feGaussianBlur stdDeviation="8"/>
-                </filter>
-                <filter id="blur3">
-                    <feGaussianBlur stdDeviation="2"/>
-                </filter>
+                <filter id="blur1"><feGaussianBlur stdDeviation="4"/></filter>
+                <filter id="blur2"><feGaussianBlur stdDeviation="8"/></filter>
+                <filter id="blur3"><feGaussianBlur stdDeviation="2"/></filter>
             </defs>
-
-            <!-- Watercolor wash background glow -->
             <ellipse cx="310" cy="210" rx="260" ry="170" fill="url(#wg2)" filter="url(#blur2)"/>
             <ellipse cx="300" cy="200" rx="220" ry="140" fill="url(#wg1)" filter="url(#blur1)"/>
-
-            <!-- Whale body — large flowing shape -->
-            <path d="M80,220 C100,180 150,140 220,130 C290,120 360,125 420,150 C480,175 520,200 540,220 C560,240 555,265 530,275 C505,285 470,280 440,270 C410,260 380,248 340,252 C300,256 265,270 230,265 C195,260 160,250 130,240 C100,230 70,250 65,235 Z"
-                  fill="#1B9E8A" opacity="0.35" filter="url(#blur3)"/>
-
-            <!-- Belly lighter -->
-            <path d="M200,175 C240,160 320,158 390,172 C440,182 490,205 515,225 C530,238 520,258 490,262 C460,266 420,255 380,252 C340,249 300,258 260,258 C225,258 190,250 175,238 C162,228 170,185 200,175 Z"
-                  fill="#23C4AB" opacity="0.25" filter="url(#blur3)"/>
-
-            <!-- Tail fluke -->
-            <path d="M530,220 C555,210 590,195 598,210 C606,225 585,248 565,255 C548,261 535,250 530,240 Z"
-                  fill="#1B9E8A" opacity="0.4"/>
-            <path d="M530,228 C552,235 582,242 585,255 C588,268 565,272 548,265 C534,258 530,245 530,228 Z"
-                  fill="#2A7BB5" opacity="0.3"/>
-
-            <!-- Pectoral fin -->
-            <path d="M250,185 C240,210 230,240 245,258 C255,270 270,265 280,255 C270,235 265,210 250,185 Z"
-                  fill="#168F7B" opacity="0.35"/>
-
-            <!-- Eye -->
+            <path d="M80,220 C100,180 150,140 220,130 C290,120 360,125 420,150 C480,175 520,200 540,220 C560,240 555,265 530,275 C505,285 470,280 440,270 C410,260 380,248 340,252 C300,256 265,270 230,265 C195,260 160,250 130,240 C100,230 70,250 65,235 Z" fill="#1B9E8A" opacity="0.35" filter="url(#blur3)"/>
+            <path d="M200,175 C240,160 320,158 390,172 C440,182 490,205 515,225 C530,238 520,258 490,262 C460,266 420,255 380,252 C340,249 300,258 260,258 C225,258 190,250 175,238 C162,228 170,185 200,175 Z" fill="#23C4AB" opacity="0.25" filter="url(#blur3)"/>
+            <path d="M530,220 C555,210 590,195 598,210 C606,225 585,248 565,255 C548,261 535,250 530,240 Z" fill="#1B9E8A" opacity="0.4"/>
+            <path d="M530,228 C552,235 582,242 585,255 C588,268 565,272 548,265 C534,258 530,245 530,228 Z" fill="#2A7BB5" opacity="0.3"/>
+            <path d="M250,185 C240,210 230,240 245,258 C255,270 270,265 280,255 C270,235 265,210 250,185 Z" fill="#168F7B" opacity="0.35"/>
             <circle cx="195" cy="200" r="8" fill="#0A1628" opacity="0.5"/>
             <circle cx="197" cy="198" r="3" fill="white" opacity="0.6"/>
-
-            <!-- Blowhole water splash -->
-            <path d="M300,128 C298,110 296,90 302,75 C305,65 310,60 308,75 C310,85 315,95 312,110 Z"
-                  fill="#23C4AB" opacity="0.4" filter="url(#blur3)"/>
-            <path d="M308,125 C320,108 335,88 345,72 C350,62 348,55 342,68 C336,80 328,95 322,112 Z"
-                  fill="#2A7BB5" opacity="0.35" filter="url(#blur3)"/>
-            <path d="M295,130 C280,115 265,95 258,78 C254,67 258,60 264,72 C270,84 278,98 285,114 Z"
-                  fill="#23C4AB" opacity="0.3" filter="url(#blur3)"/>
-
-            <!-- Water droplets -->
+            <path d="M300,128 C298,110 296,90 302,75 C305,65 310,60 308,75 C310,85 315,95 312,110 Z" fill="#23C4AB" opacity="0.4" filter="url(#blur3)"/>
+            <path d="M308,125 C320,108 335,88 345,72 C350,62 348,55 342,68 C336,80 328,95 322,112 Z" fill="#2A7BB5" opacity="0.35" filter="url(#blur3)"/>
+            <path d="M295,130 C280,115 265,95 258,78 C254,67 258,60 264,72 C270,84 278,98 285,114 Z" fill="#23C4AB" opacity="0.3" filter="url(#blur3)"/>
             <ellipse cx="340" cy="65" rx="4" ry="6" fill="#23C4AB" opacity="0.5" transform="rotate(-20 340 65)"/>
             <ellipse cx="358" cy="72" rx="3" ry="5" fill="#2A7BB5" opacity="0.4" transform="rotate(15 358 72)"/>
             <ellipse cx="262" cy="68" rx="3" ry="5" fill="#23C4AB" opacity="0.4" transform="rotate(-15 262 68)"/>
             <ellipse cx="247" cy="80" rx="2" ry="4" fill="#2A7BB5" opacity="0.3" transform="rotate(10 247 80)"/>
-
-            <!-- Watercolor texture splotches -->
             <ellipse cx="180" cy="230" rx="40" ry="25" fill="#1B9E8A" opacity="0.08" filter="url(#blur1)"/>
             <ellipse cx="420" cy="200" rx="50" ry="30" fill="#2A7BB5" opacity="0.08" filter="url(#blur1)"/>
             <ellipse cx="320" cy="165" rx="35" ry="20" fill="#23C4AB" opacity="0.1" filter="url(#blur1)"/>
-
-            <!-- Small fish companions -->
             <ellipse cx="100" cy="280" rx="12" ry="7" fill="#E8813A" opacity="0.5" transform="rotate(-10 100 280)"/>
             <path d="M88,280 L80,275 L80,285 Z" fill="#E8813A" opacity="0.5"/>
-
             <ellipse cx="480" cy="310" rx="8" ry="5" fill="#E8813A" opacity="0.4" transform="rotate(15 480 310)"/>
             <path d="M472,310 L465,307 L465,313 Z" fill="#E8813A" opacity="0.4"/>
-
             <ellipse cx="140" cy="310" rx="7" ry="4" fill="#23C4AB" opacity="0.4" transform="rotate(-5 140 310)"/>
             <path d="M133,310 L127,307 L127,313 Z" fill="#23C4AB" opacity="0.4"/>
-
-            <!-- Bubbles -->
             <circle cx="160" cy="260" r="4" fill="none" stroke="#23C4AB" stroke-width="1.5" opacity="0.4"/>
             <circle cx="155" cy="248" r="2.5" fill="none" stroke="#23C4AB" stroke-width="1.2" opacity="0.3"/>
             <circle cx="163" cy="238" r="2" fill="none" stroke="#2A7BB5" stroke-width="1" opacity="0.3"/>
-
             <circle cx="455" cy="270" r="3.5" fill="none" stroke="#23C4AB" stroke-width="1.5" opacity="0.35"/>
             <circle cx="460" cy="260" r="2" fill="none" stroke="#2A7BB5" stroke-width="1" opacity="0.25"/>
-
-            <!-- Kelp/seaweed at bottom -->
-            <path d="M50,380 C55,360 48,340 55,320 C62,300 68,310 62,330 C58,345 65,355 60,370 Z"
-                  fill="#1B9E8A" opacity="0.25"/>
-            <path d="M560,380 C555,355 562,335 556,315 C550,295 544,308 550,328 C555,343 548,358 554,375 Z"
-                  fill="#1B9E8A" opacity="0.2"/>
-            <path d="M35,380 C42,365 36,345 42,328 C48,310 53,320 47,338 C43,350 49,360 44,375 Z"
-                  fill="#23C4AB" opacity="0.18"/>
+            <path d="M50,380 C55,360 48,340 55,320 C62,300 68,310 62,330 C58,345 65,355 60,370 Z" fill="#1B9E8A" opacity="0.25"/>
+            <path d="M560,380 C555,355 562,335 556,315 C550,295 544,308 550,328 C555,343 548,358 554,375 Z" fill="#1B9E8A" opacity="0.2"/>
+            <path d="M35,380 C42,365 36,345 42,328 C48,310 53,320 47,338 C43,350 49,360 44,375 Z" fill="#23C4AB" opacity="0.18"/>
         </svg>
     </div>
 
-    <!-- Floating particles -->
     <div class="particle" style="width:4px;height:4px;left:15%;bottom:30%;animation-duration:6s;animation-delay:0s;"></div>
     <div class="particle" style="width:3px;height:3px;left:30%;bottom:20%;animation-duration:8s;animation-delay:1s;"></div>
     <div class="particle" style="width:5px;height:5px;left:60%;bottom:25%;animation-duration:7s;animation-delay:2s;"></div>
     <div class="particle" style="width:3px;height:3px;left:75%;bottom:35%;animation-duration:9s;animation-delay:0.5s;"></div>
     <div class="particle" style="width:4px;height:4px;left:85%;bottom:15%;animation-duration:6s;animation-delay:3s;"></div>
 
-    <!-- Hero text + search -->
     <div class="hero-content">
         <div class="hero-label">
             <span class="live-pip"></span> Personal File Search
@@ -778,7 +756,7 @@
         <div class="empty">
             <div class="empty-icon">~</div>
             <div class="empty-title">Ready to dive in</div>
-            <div class="empty-hint">Type a keyword above to search your indexed files</div>
+            <div class="empty-hint">Type a keyword above to search your indexed files and Wikipedia</div>
         </div>
     </div>
 </section>
@@ -807,93 +785,149 @@
         return new Date(d).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'2-digit' });
     }
 
+    function fmtWords(n) {
+        return n >= 1000 ? (n/1000).toFixed(1) + 'k words' : n + ' words';
+    }
+
     async function search() {
         const q = document.getElementById('searchInput').value.trim();
         const type = document.getElementById('fileType').value;
         const days = document.getElementById('sinceDays').value;
         if (!q) return;
 
-        // Scroll to results
         document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
 
         document.getElementById('resultsArea').innerHTML = `
-    <div class="loading">
-      <div class="loading-wave">
-        <div class="loading-bar"></div>
-        <div class="loading-bar"></div>
-        <div class="loading-bar"></div>
-        <div class="loading-bar"></div>
-        <div class="loading-bar"></div>
-      </div>
-      <div class="loading-text">Swimming through your files...</div>
-    </div>`;
+            <div class="loading">
+                <div class="loading-wave">
+                    <div class="loading-bar"></div>
+                    <div class="loading-bar"></div>
+                    <div class="loading-bar"></div>
+                    <div class="loading-bar"></div>
+                    <div class="loading-bar"></div>
+                </div>
+                <div class="loading-text">Swimming through your files and Wikipedia...</div>
+            </div>`;
 
         try {
-            let url = `${API}/search?q=${encodeURIComponent(q)}`;
-            if (type) url += `&type=${type}`;
-            if (days) url += `&sinceDays=${days}`;
-            const res = await fetch(url);
-            const data = await res.json();
-            render(data, q);
+            // Run local search and Wikipedia search in parallel
+            let localUrl = `${API}/search?q=${encodeURIComponent(q)}`;
+            if (type) localUrl += `&type=${type}`;
+            if (days)  localUrl += `&sinceDays=${days}`;
+
+            const wikiUrl = `${API}/wikipedia/search?q=${encodeURIComponent(q)}&limit=8`;
+
+            const [localRes, wikiRes] = await Promise.allSettled([
+                fetch(localUrl).then(r => r.json()),
+                fetch(wikiUrl).then(r => r.json())
+            ]);
+
+            const localResults = localRes.status === 'fulfilled' ? localRes.value : [];
+            const wikiResults  = wikiRes.status  === 'fulfilled' ? wikiRes.value  : [];
+
+            render(localResults, wikiResults, q);
+
         } catch {
             document.getElementById('resultsArea').innerHTML = `
-      <div class="error-box">
-        Could not connect to NemoFind API.<br>
-        <small>Make sure the API is running at localhost:5258</small>
-      </div>`;
+                <div class="error-box">
+                    Could not connect to NemoFind API.<br>
+                    <small>Make sure the API is running at localhost:5258</small>
+                </div>`;
         }
     }
 
-    function render(results, query) {
+    function render(localResults, wikiResults, query) {
         const area = document.getElementById('resultsArea');
-        if (!results || results.length === 0) {
+        const totalCount = localResults.length + wikiResults.length;
+
+        if (totalCount === 0) {
             area.innerHTML = `
-      <div class="empty">
-        <div class="empty-icon">∅</div>
-        <div class="empty-title">Nothing found for "${query}"</div>
-        <div class="empty-hint">Try different keywords, or click Re-index to crawl more files</div>
-      </div>`;
+                <div class="empty">
+                    <div class="empty-icon">∅</div>
+                    <div class="empty-title">Nothing found for "${query}"</div>
+                    <div class="empty-hint">Try different keywords, or click Re-index to crawl more files</div>
+                </div>`;
             return;
         }
 
-        const max = Math.max(...results.map(r => r.relevanceScore));
+        const max = localResults.length > 0
+            ? Math.max(...localResults.map(r => r.relevanceScore))
+            : 1;
 
-        area.innerHTML = `
-    <div class="results-header-row">
-      <div class="results-count"><em>${results.length}</em> result${results.length !== 1 ? 's' : ''} for "${query}"</div>
-    </div>
-    ${results.map((r, i) => {
-            const pct = max > 0 ? Math.round(r.relevanceScore / max * 100) : 0;
-            const ext = fmtExt(r.extension);
-            const encodedPath = encodeURIComponent(r.filePath);
+        let html = `
+            <div class="results-header-row">
+                <div class="results-count">
+                    <em>${totalCount}</em> result${totalCount !== 1 ? 's' : ''} for "${query}"
+                </div>
+            </div>`;
 
-            return `
-      <div class="result-card">
-        <div class="result-left">
-          <div class="result-top">
-            <span class="file-badge ${getBadgeClass(r.extension)}">${ext}</span>
-            <div class="result-name">${r.fileName}</div>
-          </div>
-          <div class="result-path">${r.filePath}</div>
-          <div class="result-meta">
-            <span class="meta-pill pill-matches">${r.matchCount} match${r.matchCount !== 1 ? 'es' : ''}</span>
-            <span class="meta-pill pill-date">${fmtDate(r.modifiedAt)}</span>
-            <span class="meta-pill pill-score">${r.relevanceScore.toFixed(3)}</span>
-          </div>
-          <div class="score-track" style="margin-top:10px;">
-            <div class="score-fill" style="width:${pct}%"></div>
-          </div>
-        </div>
-        <div class="result-actions">
-          <a class="action-btn btn-open" href="${API}/files/open?path=${encodedPath}" target="_blank" onclick="openFile(event, '${r.filePath}')">
-            ↗ Open
-          </a>
-          <button class="action-btn btn-reveal" onclick="revealInFinder('${r.filePath.replace(/'/g, "\\'")}')">
-            ⌘ Reveal
-          </button>
-        </div>
-      </div>`;
-        }).join('')}`;
+        // ── WIKIPEDIA RESULTS FIRST ──
+        if (wikiResults.length > 0) {
+            html += `
+                <div class="results-section-label">
+                    <span class="section-label-text">Wikipedia</span>
+                    <div class="section-label-line"></div>
+                    <span class="section-label-count">${wikiResults.length} article${wikiResults.length !== 1 ? 's' : ''}</span>
+                </div>`;
+
+            html += wikiResults.map(r => `
+                <div class="result-card wiki-card">
+                    <div class="result-left">
+                        <div class="result-top">
+                            <span class="badge-wiki">WIKI</span>
+                            <div class="result-name">${r.title}</div>
+                        </div>
+                        <div class="result-snippet">${r.snippet}</div>
+                        <div class="result-meta">
+                            <span class="meta-pill pill-words">${fmtWords(r.wordCount)}</span>
+                            <span class="meta-pill pill-wiki">Wikipedia</span>
+                            <span class="meta-pill pill-date">${fmtDate(r.timestamp)}</span>
+                        </div>
+                    </div>
+                    <div class="result-actions">
+                        <a class="action-btn btn-wiki" href="${r.url}" target="_blank" rel="noopener">↗ Read</a>
+                    </div>
+                </div>`).join('');
+        }
+
+        // ── LOCAL FILE RESULTS SECOND ──
+        if (localResults.length > 0) {
+            html += `
+                <div class="results-section-label">
+                    <span class="section-label-text">Your files</span>
+                    <div class="section-label-line"></div>
+                    <span class="section-label-count">${localResults.length} file${localResults.length !== 1 ? 's' : ''}</span>
+                </div>`;
+
+            html += localResults.map(r => {
+                const pct = max > 0 ? Math.round(r.relevanceScore / max * 100) : 0;
+                const ext = fmtExt(r.extension);
+                return `
+                    <div class="result-card">
+                        <div class="result-left">
+                            <div class="result-top">
+                                <span class="file-badge ${getBadgeClass(r.extension)}">${ext}</span>
+                                <div class="result-name">${r.fileName}</div>
+                            </div>
+                            <div class="result-path">${r.filePath}</div>
+                            <div class="result-meta">
+                                <span class="meta-pill pill-matches">${r.matchCount} match${r.matchCount !== 1 ? 'es' : ''}</span>
+                                <span class="meta-pill pill-date">${fmtDate(r.modifiedAt)}</span>
+                                <span class="meta-pill pill-score">${r.relevanceScore.toFixed(3)}</span>
+                            </div>
+                            <div class="score-track" style="margin-top:10px;">
+                                <div class="score-fill" style="width:${pct}%"></div>
+                            </div>
+                        </div>
+                        <div class="result-actions">
+                            <a class="action-btn btn-open" href="#" onclick="openFile(event, '${r.filePath.replace(/'/g, "\\'")}')">↗ Open</a>
+                            <button class="action-btn btn-reveal" onclick="revealInFinder('${r.filePath.replace(/'/g, "\\'")}')">⌘ Reveal</button>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        area.innerHTML = html;
     }
 
     async function openFile(e, path) {
@@ -944,9 +978,9 @@
             const res = await fetch(`${API}/search/stats`);
             const s = await res.json();
             document.getElementById('navStats').innerHTML = `
-      <span class="nav-stat"><span class="live-pip"></span><b>${s.totalFiles.toLocaleString()}</b> files</span>
-      <span class="nav-stat"><b>${s.totalWords.toLocaleString()}</b> words</span>
-      <span class="nav-stat"><b>${(s.databaseSizeBytes/1024).toFixed(0)} KB</b> index</span>`;
+                <span class="nav-stat"><span class="live-pip"></span><b>${s.totalFiles.toLocaleString()}</b> files</span>
+                <span class="nav-stat"><b>${s.totalWords.toLocaleString()}</b> words</span>
+                <span class="nav-stat"><b>${(s.databaseSizeBytes/1024).toFixed(0)} KB</b> index</span>`;
         } catch {
             document.getElementById('navStats').innerHTML =
                 `<span class="nav-stat">API offline</span>`;

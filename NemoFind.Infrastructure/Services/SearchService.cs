@@ -22,7 +22,6 @@ public class SearchService : ISearchService
         if (string.IsNullOrWhiteSpace(query))
             return Enumerable.Empty<SearchResult>();
 
-        // Log the search
         _context.SearchLogs.Add(new SearchLog
         {
             Query = query,
@@ -33,50 +32,63 @@ public class SearchService : ISearchService
 
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
-        // Split query into individual words (handles multi-word search)
         var queryWords = query
             .Split(' ', StringSplitOptions.RemoveEmptyEntries)
             .Select(w => w.ToLowerInvariant())
+            .Distinct()
             .ToList();
 
-        // Get total number of files for IDF calculation
         var totalFiles = await _context.Files.CountAsync();
         if (totalFiles == 0) return Enumerable.Empty<SearchResult>();
 
-        // Find all files that contain ANY of the query words
-        var fileScores = new Dictionary<int, double>();
+        var fileScores     = new Dictionary<int, double>();
         var fileMatchCounts = new Dictionary<int, int>();
+
+        // Track how many unique query words each file contains
+        // Used to boost files that match ALL words (phrase-like behaviour)
+        var fileWordHits = new Dictionary<int, int>();
 
         foreach (var queryWord in queryWords)
         {
-            // Find this word in the index
+            // FIX 1: also match partial words using StartsWith for short queries
+            // e.g. "learn" will also match "learning", "learned"
             var word = await _context.Words
                 .FirstOrDefaultAsync(w => w.Text == queryWord);
 
-            if (word == null) continue;
+            if (word == null)
+            {
+                // Try prefix match for single-word queries
+                if (queryWords.Count == 1)
+                {
+                    word = await _context.Words
+                        .Where(w => w.Text.StartsWith(queryWord))
+                        .OrderBy(w => w.Text.Length) // prefer shortest (closest) match
+                        .FirstOrDefaultAsync();
+                }
+                if (word == null) continue;
+            }
 
-            // Get all files containing this word
             var indexEntries = await _context.InvertedIndexes
                 .Where(i => i.WordId == word.Id)
                 .ToListAsync();
 
-            // Calculate IDF — words in fewer files are more significant
             var filesWithWord = indexEntries.Count;
-            var idf = Math.Log((double)totalFiles / (filesWithWord + 1));
 
+            // FIX 2: use TfIdfScore directly — don't multiply by IDF again.
+            // The score is already TF-IDF. We just sum across query words.
             foreach (var entry in indexEntries)
             {
-                var tfidf = entry.TfIdfScore * idf;
-
                 if (fileScores.ContainsKey(entry.FileId))
                 {
-                    fileScores[entry.FileId] += tfidf;
+                    fileScores[entry.FileId]      += entry.TfIdfScore;
                     fileMatchCounts[entry.FileId] += entry.Frequency;
+                    fileWordHits[entry.FileId]    += 1;
                 }
                 else
                 {
-                    fileScores[entry.FileId] = tfidf;
+                    fileScores[entry.FileId]      = entry.TfIdfScore;
                     fileMatchCounts[entry.FileId] = entry.Frequency;
+                    fileWordHits[entry.FileId]    = 1;
                 }
             }
         }
@@ -84,47 +96,62 @@ public class SearchService : ISearchService
         if (fileScores.Count == 0)
             return Enumerable.Empty<SearchResult>();
 
-        // Get the actual file records for all matching files
-        var fileIds = fileScores.Keys.ToList();
+        var fileIds    = fileScores.Keys.ToList();
         var filesQuery = _context.Files.Where(f => fileIds.Contains(f.Id));
 
-        // Apply file type filter if specified
         if (!string.IsNullOrWhiteSpace(fileType))
         {
             var ext = fileType.StartsWith(".") ? fileType : $".{fileType}";
             filesQuery = filesQuery.Where(f => f.Extension == ext.ToLowerInvariant());
         }
 
-        // Apply date filter if specified
         if (since.HasValue)
-        {
             filesQuery = filesQuery.Where(f => f.ModifiedAt >= since.Value);
-        }
 
         var files = await filesQuery.ToListAsync();
 
-        // Build ranked results
-        var results = files
-            .Select(f => new SearchResult
+        var queryLower = query.ToLowerInvariant();
+
+        var results = files.Select(f =>
+        {
+            var baseScore = fileScores[f.Id];
+
+            // FIX 3: filename boost — file name contains the full query or any query word
+            var fileNameLower = f.Name.ToLowerInvariant();
+            if (fileNameLower.Contains(queryLower))
+                baseScore *= 3.0;   // strong boost — exact phrase in filename
+            else if (queryWords.Any(w => fileNameLower.Contains(w)))
+                baseScore *= 1.8;   // moderate boost — at least one word in filename
+
+            // FIX 4: all-words bonus — file contains every query word
+            // Rewards files that match the full query, not just one word
+            if (queryWords.Count > 1 && fileWordHits.TryGetValue(f.Id, out var hits))
             {
-                FileId = f.Id,
-                FilePath = f.Path,
-                FileName = f.Name,
-                Extension = f.Extension,
-                RelevanceScore = Math.Round(fileScores[f.Id], 4),
-                MatchCount = fileMatchCounts[f.Id],
-                ModifiedAt = f.ModifiedAt
-            })
-            .OrderByDescending(r => r.RelevanceScore)
-            .ToList();
+                var coverage = (double)hits / queryWords.Count;
+                baseScore *= (1.0 + coverage); // up to 2x for full coverage
+            }
+
+            return new SearchResult
+            {
+                FileId         = f.Id,
+                FilePath       = f.Path,
+                FileName       = f.Name,
+                Extension      = f.Extension,
+                RelevanceScore = Math.Round(baseScore, 4),
+                MatchCount     = fileMatchCounts[f.Id],
+                ModifiedAt     = f.ModifiedAt
+            };
+        })
+        .OrderByDescending(r => r.RelevanceScore)
+        .Take(50) // cap at 50 results — more than this is noise
+        .ToList();
 
         stopwatch.Stop();
 
-        // Update search log with actual results
         var log = _context.SearchLogs.Local.LastOrDefault();
         if (log != null)
         {
-            log.ResultCount = results.Count;
+            log.ResultCount      = results.Count;
             log.SearchDurationMs = stopwatch.ElapsedMilliseconds;
         }
 
@@ -135,7 +162,6 @@ public class SearchService : ISearchService
 
     public async Task<IEnumerable<IndexedFile>> GetDuplicatesAsync()
     {
-        // Find files that share the same hash — these are duplicates
         var duplicateHashes = await _context.FileHashes
             .GroupBy(h => h.Hash)
             .Where(g => g.Count() > 1)
@@ -166,11 +192,11 @@ public class SearchService : ISearchService
 
         return new SearchStats
         {
-            TotalFiles = await _context.Files.CountAsync(),
-            TotalWords = await _context.Words.CountAsync(),
-            TotalIndexEntries = await _context.InvertedIndexes.CountAsync(),
-            DatabaseSizeBytes = dbSize,
-            LastCrawledAt = lastFile?.IndexedAt ?? DateTime.MinValue
+            TotalFiles         = await _context.Files.CountAsync(),
+            TotalWords         = await _context.Words.CountAsync(),
+            TotalIndexEntries  = await _context.InvertedIndexes.CountAsync(),
+            DatabaseSizeBytes  = dbSize,
+            LastCrawledAt      = lastFile?.IndexedAt ?? DateTime.MinValue
         };
     }
 }
