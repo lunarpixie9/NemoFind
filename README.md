@@ -11,14 +11,11 @@ NemoFind crawls your file system, extracts full text from 20+ file types, builds
 
 ## What It Does
 
-- **Crawls** directories recursively and indexes 20+ file types (`.txt`, `.md`, `.pdf`, `.docx`, `.cs`, `.py`, `.json`, and more)
-- **Extracts** full text content from plain files, PDFs (via iTextSharp), and Word documents (DOCX via ZIP+XML parsing)
-- **Builds** an inverted index with TF-IDF relevance scoring, stop-word filtering, and word-frequency tokenisation
-- **Ranks** results using TF-IDF score + filename-proximity boost + multi-word coverage bonus
-- **Auto-updates** the index in real time using `FileSystemWatcher` — no re-crawl needed when files are created, changed, renamed, or deleted
-- **Detects** duplicate files across the index using SHA hash grouping
-- **Searches Wikipedia** for the same keyword via the Wikipedia Action API, returning article titles, snippets, and direct URLs
-- **Logs** every query with result count and response time (ms) for basic analytics
+- **Built** a C# (.NET 10) search engine that crawls the file system, extracts text from 20+ file types (`.pdf`, `.docx`, source code), and stores a TF-IDF inverted index in SQLite via EF Core — indexed **648 files**, **79K+ unique words**, searches in **~160 ms**
+- **Implemented** a text-processing pipeline with tokenisation, stop-word filtering, and TF-IDF scoring; parsed PDFs with iTextSharp and `.docx` via ZipFile + XML, with filename-proximity boosting for relevance ranking
+- **Automated** real-time index updates via `FileSystemWatcher` as an ASP.NET Core `BackgroundService` — creates, edits, renames, and deletes sync instantly with no re-crawl
+- **Integrated** the Wikipedia API to surface encyclopedia results alongside local file matches for every search query
+- **Structured** into 4 Clean Architecture projects (`Core`, `Infrastructure`, `API`, `CLI`) with a Swagger-documented REST API and a CLI with `--type` and `--since` filters
 
 ---
 
